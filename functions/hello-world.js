@@ -2,42 +2,87 @@ const superagent = require('superagent');
 exports.handler = async function(context, event, callback) {
   const twiml = new Twilio.twiml.MessagingResponse();
   let inbMsg = event.Body.trim();
-  let propObj;
-  
-  if(inbMsg.includes(",")) {
-    let firstCell = inbMsg.split(',')[0];
-    let secondCell = inbMsg.split(',')[1];
-    propObj = {
-      "Time": [
-        {
-          "text": {
-            "content": `${firstCell}`
-          }
+  let propObj, firstCell, secondCell, thirdCell;
+  let count = (inbMsg.match(/,/g) || []).length;
+  propObj = {
+          "Name": [
+            {
+              "text": {
+                "content": `${firstCell}`
+              }
+            }
+          ]
         }
-      ],
-      "Topic": [
-        {
-          "text": {
-            "content": `${secondCell}`
-          }
-        }
-      ],
-    }
-  }
-  else {
-    propObj = {
-      "Time": [
-        {
-          "text": {
-            "content": `${inbMsg}`
-          }
-        }
-      ]
-    }
-  }
+  // switch(count) {
+  //   case 0: 
+  //     firstCell = inbMsg;
+  //     propObj = {
+  //       "Name": [
+  //         {
+  //           "text": {
+  //             "content": `${firstCell}`
+  //           }
+  //         }
+  //       ]
+  //     }
+  //     break;
+  //   case 1: //1 comma = 2 columns
+  //     firstCell = inbMsg.split(',')[0];
+  //     secondCell = inbMsg.split(',')[1];
+  //     propObj = {
+  //       "Name": {
+  //         "title": [
+  //             {
+  //                 "text": {
+  //                     "content": `${firstCell}`,
+  //                 },
+  //             },
+  //         ],
+  //     },
+  //     "Where": {
+  //       "title": [
+  //         {
+  //           "text": {
+  //             "content": `${secondCell}`
+  //           }
+  //         }
+  //       ]
+  //     }
+  // };
+  //     break;
+  //   case 2: //2 commas, 3 columns
+  //     firstCell = inbMsg.split(',')[0];
+  //     secondCell = inbMsg.split(',')[1];
+  //     thirdCell = inbMsg.split(',')[2];
+  //     propObj = {
+  //       "Name": [
+  //         {
+  //           "text": {
+  //             "content": `${firstCell}`
+  //           }
+  //         }
+  //       ],
+  //       "Where": [
+  //         {
+  //           "text": {
+  //             "content": `${secondCell}`
+  //           }
+  //         }
+  //       ],
+  //       "Price": [
+  //         {
+  //           "text": {
+  //             "content": `${thirdCell}`
+  //           }
+  //         }
+  //       ]
+  //     }
+  //     break;
+  // }
+    
   superagent.post(`https://api.notion.com/v1/pages`, 
   { "parent": { 
-    "database_id": `${context.NOTION_DB_ID}`
+    "database_id": `dcfc26d4074241628beace35c8ecde9e`
   }, "properties": propObj
 })
   .set('Authorization', `Bearer ${context.NOTION_API_KEY}`)
